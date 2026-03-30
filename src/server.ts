@@ -1,4 +1,5 @@
 import http from "node:http";
+import "dotenv/config";
 import { createApplication } from "./app";
 
 async function main() {
