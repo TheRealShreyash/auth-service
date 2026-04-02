@@ -9,7 +9,7 @@ class ApiResponse {
     });
   }
 
-  static created(res: Response, message: string, data = null) {
+  static created(res: Response, message: string, data?: any) {
     return res.status(201).json({
       success: true,
       message,

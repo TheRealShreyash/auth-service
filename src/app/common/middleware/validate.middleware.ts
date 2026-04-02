@@ -1,15 +1,17 @@
 import type { NextFunction, Request, Response } from "express";
-import type BaseDto from "../dto/base.dto";
+import type { ZodObject } from "zod";
 import ApiError from "../utils/api-error";
 
-const validate = (DtoClass: typeof BaseDto) => {
+const validate = (schema: ZodObject<any>) => {
   return (req: Request, _: Response, next: NextFunction) => {
-    const { errors, value } = DtoClass.validate(req.body);
+    const result = schema.safeParse(req.body);
 
-    if (errors) {
-      throw ApiError.badRequest(errors.join("; "));
+    if (!result.success) {
+      const errors = result.error.issues.map((e) => e.message).join("; ");
+      throw ApiError.badRequest(errors);
     }
-    req.body = value;
+
+    req.body = result.data;
     next();
   };
 };
