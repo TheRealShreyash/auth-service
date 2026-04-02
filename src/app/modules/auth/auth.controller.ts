@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { signUp } from "./auth.services";
+import { signin, signUp } from "./auth.services";
 import ApiResponse from "../../common/utils/api-response";
 
 class AuthController {
@@ -11,7 +11,8 @@ class AuthController {
   }
 
   static async handleSignin(req: Request, res: Response) {
-    
+    const token = await signin(req.body);
+    ApiResponse.ok(res, `Signed in`, { token });
   }
 }
 

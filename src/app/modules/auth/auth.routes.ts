@@ -11,6 +11,10 @@ authRouter.post(
   AuthController.handleSignup,
 );
 
-authRouter.post("/sign-in", validate(signInPayloadModel));
+authRouter.post(
+  "/sign-in",
+  validate(signInPayloadModel),
+  AuthController.handleSignin,
+);
 
 export default authRouter;

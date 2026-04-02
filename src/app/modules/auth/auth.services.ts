@@ -4,6 +4,7 @@ import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
 import type { SignInPayload, SignUpPayload } from "./auth.models";
 import ApiError from "../../common/utils/api-error";
+import { createUserToken } from "./utils/token";
 
 export const signUp = async (payload: SignUpPayload) => {
   const { firstName, lastName, email, password } = payload;
@@ -37,5 +38,21 @@ export const signUp = async (payload: SignUpPayload) => {
 export const signin = async (payload: SignInPayload) => {
   const { email, password } = payload;
 
-  
+  const [userSelect] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.email, email));
+
+  if (!userSelect)
+    throw ApiError.notFound(`User with email ${email} doesn't exist`);
+
+  const salt = userSelect.salt!;
+  const hash = createHmac("sha256", salt).update(password).digest("hex");
+
+  if (userSelect.password !== hash)
+    throw ApiError.badRequest(`Email or password is incorrect`);
+
+  const token = createUserToken({ id: userSelect.id });
+
+  return token;
 };
