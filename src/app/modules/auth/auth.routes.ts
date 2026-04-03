@@ -2,6 +2,7 @@ import { Router } from "express";
 import validate from "../../common/middleware/validate.middleware";
 import { signInPayloadModel, signUpPayloadModel } from "./auth.models";
 import AuthController from "./auth.controller";
+import { restrictToAuthenticatedUser } from "../../common/middleware/authenticate.middleware";
 
 const authRouter = Router();
 
@@ -16,5 +17,7 @@ authRouter.post(
   validate(signInPayloadModel),
   AuthController.handleSignin,
 );
+
+authRouter.post("/me", restrictToAuthenticatedUser(), AuthController.handleMe);
 
 export default authRouter;

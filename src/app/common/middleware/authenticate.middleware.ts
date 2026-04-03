@@ -1,10 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import ApiError from "../utils/api-error";
 import { verifyUserToken } from "../../modules/auth/utils/token";
-
-interface AuthenticatedRequest extends Request {
-  user?: any;
-}
+import type { AuthenticatedRequest } from "../utils/interfaces";
 
 export const authenticate = () => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

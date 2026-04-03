@@ -2,9 +2,11 @@ import { randomBytes, createHmac } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
+import { type Request } from "express";
 import type { SignInPayload, SignUpPayload } from "./auth.models";
 import ApiError from "../../common/utils/api-error";
 import { createUserToken } from "./utils/token";
+import type { AuthenticatedRequest } from "../../common/utils/interfaces";
 
 export const signUp = async (payload: SignUpPayload) => {
   const { firstName, lastName, email, password } = payload;
@@ -55,4 +57,19 @@ export const signin = async (payload: SignInPayload) => {
   const token = createUserToken({ id: userSelect.id });
 
   return token;
+};
+
+export const getMe = async (req: AuthenticatedRequest) => {
+  const [userSelect] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.id, req.user.id));
+
+  if (!userSelect) {
+    throw ApiError.notFound(`User with email ${req.user.id} doesn't exist`);
+  }
+
+  const { password, salt, ...user } = userSelect;
+
+  return user;
 };

@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
-import { signin, signUp } from "./auth.services";
+import { getMe, signin, signUp } from "./auth.services";
 import ApiResponse from "../../common/utils/api-response";
-import ApiError from "../../common/utils/api-error";
 
 class AuthController {
   static async handleSignup(req: Request, res: Response) {
@@ -11,13 +10,7 @@ class AuthController {
         id: result?.id,
       });
     } catch (error) {
-      if (error instanceof ApiError) {
-        return ApiResponse.error(res, error.message, error.statusCode);
-      }
-
-      return res
-        .status(500)
-        .json({ success: false, error: "Internal server error" });
+      return ApiResponse.error(res, error);
     }
   }
 
@@ -26,13 +19,16 @@ class AuthController {
       const token = await signin(req.body);
       ApiResponse.ok(res, `Signed in`, { token });
     } catch (error) {
-      if (error instanceof ApiError) {
-        return ApiResponse.error(res, error.message, error.statusCode);
-      }
+      return ApiResponse.error(res, error);
+    }
+  }
 
-      return res
-        .status(500)
-        .json({ success: false, error: "Internal server error" });
+  static async handleMe(req: Request, res: Response) {
+    try {
+      const user = await getMe(req);
+      ApiResponse.ok(res, "User found", user);
+    } catch (error) {
+      return ApiResponse.error(res, error);
     }
   }
 }
