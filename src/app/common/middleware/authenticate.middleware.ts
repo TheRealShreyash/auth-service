@@ -9,7 +9,7 @@ interface AuthenticatedRequest extends Request {
 export const authenticate = () => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const header = req.headers["authorization"];
-    if (!header) next();
+    if (!header) return next();
 
     if (!header?.startsWith("Bearer")) {
       throw ApiError.badRequest(`Authorization header must start with bearer`);
@@ -23,6 +23,8 @@ export const authenticate = () => {
 
     const user = verifyUserToken(token);
     req.user = user;
+
+    next();
   };
 };
 
