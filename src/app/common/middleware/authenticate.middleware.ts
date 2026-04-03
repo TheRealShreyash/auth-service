@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import ApiError from "../utils/api-error";
 import { verifyUserToken } from "../../modules/auth/utils/token";
 import type { AuthenticatedRequest } from "../utils/interfaces";
+import ApiResponse from "../utils/api-response";
 
 export const authenticate = () => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -27,7 +28,12 @@ export const authenticate = () => {
 
 export const restrictToAuthenticatedUser = () => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    if (!req.user) throw ApiError.unauthorized("Authentication required");
-    return next();
+    // if (!req.user) throw ApiError.unauthorized("Authentication required");
+    if (!req.user)
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required",
+      });
+    next();
   };
 };
