@@ -18,13 +18,14 @@ class ApiResponse {
     });
   }
 
-  static error(res: Response, error: Error, statusCode: number) {
+  static error(res: Response, error: unknown) {
     if (error instanceof ApiError) {
-      return res.status(statusCode).json({
+      return res.status(error.statusCode).json({
         success: false,
-        error: error,
+        error: error.message,
       });
     }
+    console.log(`[ Res | Err ] ${error}`);
     return res.status(500).json({
       success: false,
       error: "Internal server error",
