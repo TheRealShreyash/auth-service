@@ -2,10 +2,9 @@ import { randomBytes, createHmac } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
-import { type Request } from "express";
 import type { SignInPayload, SignUpPayload } from "./auth.models";
 import ApiError from "../../common/utils/api-error";
-import { createUserToken } from "./utils/token";
+import { createRefreshToken, createUserToken } from "./utils/token";
 import type { AuthenticatedRequest } from "../../common/utils/interfaces";
 
 export const signUp = async (payload: SignUpPayload) => {
@@ -54,9 +53,16 @@ export const signin = async (payload: SignInPayload) => {
   if (userSelect.password !== hash)
     throw ApiError.badRequest(`Email or password is incorrect`);
 
-  const token = createUserToken({ id: userSelect.id });
+  const accessToken = createUserToken({ id: userSelect.id });
 
-  return token;
+  const refreshToken = createRefreshToken({ id: userSelect.id });
+
+  await db
+    .update(usersTable)
+    .set({ refreshToken })
+    .where(eq(usersTable.id, userSelect.id));
+
+  return { accessToken: accessToken, refreshToken: refreshToken };
 };
 
 export const getMe = async (req: AuthenticatedRequest) => {

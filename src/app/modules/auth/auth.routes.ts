@@ -20,4 +20,6 @@ authRouter.post(
 
 authRouter.post("/me", restrictToAuthenticatedUser(), AuthController.handleMe);
 
+authRouter.post("/logout", restrictToAuthenticatedUser());
+
 export default authRouter;

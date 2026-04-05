@@ -6,9 +6,19 @@ export interface UserTokenPayload {
 
 const JWT_SECRET = process.env.JWT_SECRET || "youshallnotpass";
 
+const JWT_REFRESH_TOKEN_SECRET =
+  process.env.JWT_REFRESH_TOKEN_SECRET || "dontpassthis";
+
 export function createUserToken(payload: UserTokenPayload) {
-  const token = JWT.sign(payload, JWT_SECRET);
+  const token = JWT.sign(payload, JWT_SECRET, { expiresIn: "15m" });
   return token;
+}
+
+export function createRefreshToken(payload: UserTokenPayload) {
+  const refreshToken = JWT.sign(payload, JWT_REFRESH_TOKEN_SECRET, {
+    expiresIn: "24h",
+  });
+  return refreshToken;
 }
 
 export function verifyUserToken(token: string) {

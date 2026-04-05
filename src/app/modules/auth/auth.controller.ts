@@ -16,8 +16,14 @@ class AuthController {
 
   static async handleSignin(req: Request, res: Response) {
     try {
-      const token = await signin(req.body);
-      ApiResponse.ok(res, `Signed in`, { token });
+      const { accessToken, refreshToken } = await signin(req.body);
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+      ApiResponse.ok(res, `Signed in`, { accessToken });
     } catch (error) {
       return ApiResponse.error(res, error);
     }
@@ -30,6 +36,10 @@ class AuthController {
     } catch (error) {
       return ApiResponse.error(res, error);
     }
+  }
+
+  static async handleLogout(req: Request, res: Response) {
+    // logic goes here
   }
 }
 
