@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import authRouter from "./modules/auth/auth.routes";
 import { authenticate } from "./common/middleware/authenticate.middleware";
 
@@ -6,6 +7,7 @@ export function createApplication() {
   const app = express();
 
   app.use(express.json());
+  app.use(cookieParser());
   app.use(authenticate());
 
   app.get("/", (_, res) => {
