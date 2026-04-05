@@ -1,5 +1,5 @@
 import { randomBytes, createHmac } from "node:crypto";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
 import type { SignInPayload, SignUpPayload } from "./auth.models";
@@ -72,10 +72,25 @@ export const getMe = async (req: AuthenticatedRequest) => {
     .where(eq(usersTable.id, req.user.id));
 
   if (!userSelect) {
-    throw ApiError.notFound(`User with email ${req.user.id} doesn't exist`);
+    throw ApiError.notFound(`User with email ${req.user.email} doesn't exist`);
   }
 
   const { password, salt, ...user } = userSelect;
 
   return user;
+};
+
+export const logout = async (req: AuthenticatedRequest) => {
+  const refreshToken = req.cookies["refreshToken"];
+  if (!refreshToken) throw ApiError.badRequest("No refresh token found");
+
+  await db
+    .update(usersTable)
+    .set({ refreshToken: null })
+    .where(
+      and(
+        eq(usersTable.id, req.user.id),
+        eq(usersTable.refreshToken, refreshToken),
+      ),
+    );
 };

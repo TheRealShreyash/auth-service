@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { getMe, signin, signUp } from "./auth.services";
+import { getMe, logout, signin, signUp } from "./auth.services";
 import ApiResponse from "../../common/utils/api-response";
 
 class AuthController {
@@ -39,7 +39,17 @@ class AuthController {
   }
 
   static async handleLogout(req: Request, res: Response) {
-    // logic goes here
+    try {
+      await logout(req);
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+      });
+      ApiResponse.ok(res, "Logged out successfully");
+    } catch (error) {
+      return ApiResponse.error(res, error);
+    }
   }
 }
 
