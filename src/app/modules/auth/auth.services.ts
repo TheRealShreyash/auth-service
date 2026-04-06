@@ -8,6 +8,7 @@ import {
   createEmailVerificationToken,
   createRefreshToken,
   createUserToken,
+  verifyEmailVerificationToken,
 } from "./utils/token";
 import type { AuthenticatedRequest } from "../../common/utils/interfaces";
 
@@ -38,7 +39,7 @@ export const signUp = async (payload: SignUpPayload) => {
     .returning({ id: usersTable.id });
 
   const verificationToken = createEmailVerificationToken(email);
-  const verificationLink = `http://localhost:${process.env.PORT || 8080}/auth/verify-email?token=${verificationToken}`;
+  const verificationLink = `http://localhost:${process.env.PORT || 8080}/auth/verify-email?token=${verificationToken}&id=${result?.id}`;
 
   console.log(verificationLink);
 
@@ -84,7 +85,7 @@ export const getMe = async (req: AuthenticatedRequest) => {
     throw ApiError.notFound(`User with email ${req.user.email} doesn't exist`);
   }
 
-  const { password, salt, ...user } = userSelect;
+  const { password, salt, refreshToken, ...user } = userSelect;
 
   return user;
 };
@@ -104,4 +105,24 @@ export const logout = async (req: AuthenticatedRequest) => {
     );
 };
 
-export const verifyEmail = async () => {};
+export const verifyEmail = async (token: string, id: string) => {
+  const payload = verifyEmailVerificationToken(token);
+
+  if (!payload)
+    throw ApiError.badRequest("Invalid or expired verification link");
+
+  const [userSelect] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.id, id));
+
+  if (!userSelect) throw ApiError.notFound(`User with id ${id} doesn't exist`);
+
+  if (userSelect.emailVerified)
+    throw ApiError.badRequest("Email already verified");
+
+  await db
+    .update(usersTable)
+    .set({ emailVerified: true })
+    .where(eq(usersTable.id, id));
+};

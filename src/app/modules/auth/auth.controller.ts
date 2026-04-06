@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { getMe, logout, signin, signUp } from "./auth.services";
+import { getMe, logout, signin, signUp, verifyEmail } from "./auth.services";
 import ApiResponse from "../../common/utils/api-response";
 
 class AuthController {
@@ -53,7 +53,15 @@ class AuthController {
   }
 
   static async handleVerifyEmail(req: Request, res: Response) {
-    
+    try {
+      const { token, id } = req.query as { token: string; id: string };
+
+      await verifyEmail(token, id);
+
+      ApiResponse.ok(res, "Email verified successfully");
+    } catch (error) {
+      ApiResponse.error(res, error);
+    }
   }
 }
 
