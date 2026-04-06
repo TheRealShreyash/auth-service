@@ -51,6 +51,10 @@ class AuthController {
       return ApiResponse.error(res, error);
     }
   }
+
+  static async handleVerifyEmail(req: Request, res: Response) {
+    
+  }
 }
 
 export default AuthController;

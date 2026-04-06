@@ -12,5 +12,10 @@ export const signInPayloadModel = z.object({
   password: z.string().min(6),
 });
 
+export const verifyEmailPayloadModel = z.object({
+  email: z.email(),
+});
+
 export type SignUpPayload = z.infer<typeof signUpPayloadModel>;
 export type SignInPayload = z.infer<typeof signInPayloadModel>;
+export type VerifyEmailPayload = z.infer<typeof verifyEmailPayloadModel>;

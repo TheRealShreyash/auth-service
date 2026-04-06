@@ -4,7 +4,11 @@ import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
 import type { SignInPayload, SignUpPayload } from "./auth.models";
 import ApiError from "../../common/utils/api-error";
-import { createRefreshToken, createUserToken } from "./utils/token";
+import {
+  createEmailVerificationToken,
+  createRefreshToken,
+  createUserToken,
+} from "./utils/token";
 import type { AuthenticatedRequest } from "../../common/utils/interfaces";
 
 export const signUp = async (payload: SignUpPayload) => {
@@ -32,6 +36,11 @@ export const signUp = async (payload: SignUpPayload) => {
       salt,
     })
     .returning({ id: usersTable.id });
+
+  const verificationToken = createEmailVerificationToken(email);
+  const verificationLink = `http://localhost:${process.env.PORT || 8080}/auth/verify-email?token=${verificationToken}`;
+
+  console.log(verificationLink);
 
   return result;
 };
@@ -94,3 +103,5 @@ export const logout = async (req: AuthenticatedRequest) => {
       ),
     );
 };
+
+export const verifyEmail = async () => {};

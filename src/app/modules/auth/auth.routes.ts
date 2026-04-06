@@ -1,6 +1,10 @@
 import { Router } from "express";
 import validate from "../../common/middleware/validate.middleware";
-import { signInPayloadModel, signUpPayloadModel } from "./auth.models";
+import {
+  signInPayloadModel,
+  signUpPayloadModel,
+  verifyEmailPayloadModel,
+} from "./auth.models";
 import AuthController from "./auth.controller";
 import { restrictToAuthenticatedUser } from "../../common/middleware/authenticate.middleware";
 
@@ -25,5 +29,7 @@ authRouter.post(
   restrictToAuthenticatedUser(),
   AuthController.handleLogout,
 );
+
+authRouter.post("/verify-email", validate(verifyEmailPayloadModel), AuthController.handleVerifyEmail);
 
 export default authRouter;
