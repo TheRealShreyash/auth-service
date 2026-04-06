@@ -38,8 +38,8 @@ export const signUp = async (payload: SignUpPayload) => {
     })
     .returning({ id: usersTable.id });
 
-  const verificationToken = createEmailVerificationToken(email);
-  const verificationLink = `http://localhost:${process.env.PORT || 8080}/auth/verify-email?token=${verificationToken}&id=${result?.id}`;
+  const verificationToken = createEmailVerificationToken({ email });
+  const verificationLink = `http://localhost:${process.env.PORT || 8080}/auth/verify-email?token=${verificationToken}`;
 
   console.log(verificationLink);
 
@@ -105,7 +105,7 @@ export const logout = async (req: AuthenticatedRequest) => {
     );
 };
 
-export const verifyEmail = async (token: string, id: string) => {
+export const verifyEmail = async (token: string) => {
   const payload = verifyEmailVerificationToken(token);
 
   if (!payload)
@@ -114,9 +114,10 @@ export const verifyEmail = async (token: string, id: string) => {
   const [userSelect] = await db
     .select()
     .from(usersTable)
-    .where(eq(usersTable.id, id));
+    .where(eq(usersTable.email, payload.email));
 
-  if (!userSelect) throw ApiError.notFound(`User with id ${id} doesn't exist`);
+  if (!userSelect)
+    throw ApiError.notFound(`User with email ${payload.email} doesn't exist`);
 
   if (userSelect.emailVerified)
     throw ApiError.badRequest("Email already verified");
@@ -124,5 +125,5 @@ export const verifyEmail = async (token: string, id: string) => {
   await db
     .update(usersTable)
     .set({ emailVerified: true })
-    .where(eq(usersTable.id, id));
+    .where(eq(usersTable.email, payload.email));
 };

@@ -54,9 +54,8 @@ class AuthController {
 
   static async handleVerifyEmail(req: Request, res: Response) {
     try {
-      const { token, id } = req.query as { token: string; id: string };
-
-      await verifyEmail(token, id);
+      const { token } = req.query as { token: string };
+      await verifyEmail(token);
 
       ApiResponse.ok(res, "Email verified successfully");
     } catch (error) {

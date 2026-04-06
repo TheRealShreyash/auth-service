@@ -3,7 +3,6 @@ import validate from "../../common/middleware/validate.middleware";
 import {
   signInPayloadModel,
   signUpPayloadModel,
-  verifyEmailPayloadModel,
 } from "./auth.models";
 import AuthController from "./auth.controller";
 import { restrictToAuthenticatedUser } from "../../common/middleware/authenticate.middleware";
@@ -30,6 +29,9 @@ authRouter.post(
   AuthController.handleLogout,
 );
 
-authRouter.post("/verify-email", validate(verifyEmailPayloadModel), AuthController.handleVerifyEmail);
+authRouter.get(
+  "/verify-email",
+  AuthController.handleVerifyEmail,
+);
 
 export default authRouter;

@@ -4,6 +4,10 @@ export interface UserTokenPayload {
   id: string;
 }
 
+export interface EmailVerificationPayload {
+  email: string;
+}
+
 const JWT_SECRET = process.env.JWT_SECRET || "youshallnotpass";
 
 const JWT_REFRESH_TOKEN_SECRET =
@@ -24,13 +28,18 @@ export function createRefreshToken(payload: UserTokenPayload) {
   return refreshToken;
 }
 
-export function createEmailVerificationToken(email: string) {
-  return JWT.sign(email, JWT_EMAIL_VERIFICATION_SECRET); // lets keep it permanent for now.
+export function createEmailVerificationToken(
+  payload: EmailVerificationPayload,
+) {
+  return JWT.sign(payload, JWT_EMAIL_VERIFICATION_SECRET); // lets keep it permanent for now.
 }
 
 export function verifyEmailVerificationToken(token: string) {
   try {
-    return JWT.verify(token, JWT_EMAIL_VERIFICATION_SECRET) as string;
+    return JWT.verify(
+      token,
+      JWT_EMAIL_VERIFICATION_SECRET,
+    ) as EmailVerificationPayload;
   } catch (error) {
     return null;
   }
