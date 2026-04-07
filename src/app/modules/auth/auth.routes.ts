@@ -21,7 +21,7 @@ authRouter.post(
   AuthController.handleSignin,
 );
 
-authRouter.post("/me", restrictToAuthenticatedUser(), AuthController.handleMe);
+authRouter.get("/me", restrictToAuthenticatedUser(), AuthController.handleMe);
 
 authRouter.post(
   "/logout",
