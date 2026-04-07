@@ -72,7 +72,7 @@ class AuthController {
 
   static async handleRefreshToken(req: Request, res: Response) {
     try {
-      const accessToken = refreshToken(req);
+      const accessToken = await refreshToken(req);
       ApiResponse.ok(res, "Token refreshed successfully", {
         accessToken: accessToken,
       });
