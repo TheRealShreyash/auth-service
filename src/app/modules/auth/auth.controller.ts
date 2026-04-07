@@ -1,5 +1,12 @@
 import type { Request, Response } from "express";
-import { getMe, logout, signin, signUp, verifyEmail } from "./auth.services";
+import {
+  getMe,
+  logout,
+  refreshToken,
+  signin,
+  signUp,
+  verifyEmail,
+} from "./auth.services";
 import ApiResponse from "../../common/utils/api-response";
 
 class AuthController {
@@ -58,6 +65,17 @@ class AuthController {
       await verifyEmail(token);
 
       ApiResponse.ok(res, "Email verified successfully");
+    } catch (error) {
+      ApiResponse.error(res, error);
+    }
+  }
+
+  static async handleRefreshToken(req: Request, res: Response) {
+    try {
+      const accessToken = refreshToken(req);
+      ApiResponse.ok(res, "Token refreshed successfully", {
+        accessToken: accessToken,
+      });
     } catch (error) {
       ApiResponse.error(res, error);
     }

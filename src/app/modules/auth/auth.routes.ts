@@ -1,9 +1,6 @@
 import { Router } from "express";
 import validate from "../../common/middleware/validate.middleware";
-import {
-  signInPayloadModel,
-  signUpPayloadModel,
-} from "./auth.models";
+import { signInPayloadModel, signUpPayloadModel } from "./auth.models";
 import AuthController from "./auth.controller";
 import { restrictToAuthenticatedUser } from "../../common/middleware/authenticate.middleware";
 
@@ -29,9 +26,8 @@ authRouter.post(
   AuthController.handleLogout,
 );
 
-authRouter.get(
-  "/verify-email",
-  AuthController.handleVerifyEmail,
-);
+authRouter.get("/verify-email", AuthController.handleVerifyEmail);
+
+authRouter.post("/refresh-token", AuthController.handleRefreshToken);
 
 export default authRouter;

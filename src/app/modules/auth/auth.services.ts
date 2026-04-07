@@ -9,6 +9,7 @@ import {
   createRefreshToken,
   createUserToken,
   verifyEmailVerificationToken,
+  verifyRefreshToken,
 } from "./utils/token";
 import type { AuthenticatedRequest } from "../../common/utils/interfaces";
 
@@ -79,10 +80,10 @@ export const getMe = async (req: AuthenticatedRequest) => {
   const [userSelect] = await db
     .select()
     .from(usersTable)
-    .where(eq(usersTable.id, req.user.id));
+    .where(eq(usersTable.id, req.user!.id));
 
   if (!userSelect) {
-    throw ApiError.notFound(`User with email ${req.user.email} doesn't exist`);
+    throw ApiError.notFound(`User with email ${req.user!.email} doesn't exist`);
   }
 
   const { password, salt, refreshToken, ...user } = userSelect;
@@ -99,7 +100,7 @@ export const logout = async (req: AuthenticatedRequest) => {
     .set({ refreshToken: null })
     .where(
       and(
-        eq(usersTable.id, req.user.id),
+        eq(usersTable.id, req.user!.id),
         eq(usersTable.refreshToken, refreshToken),
       ),
     );
@@ -126,4 +127,27 @@ export const verifyEmail = async (token: string) => {
     .update(usersTable)
     .set({ emailVerified: true })
     .where(eq(usersTable.email, payload.email));
+};
+
+export const refreshToken = async (req: AuthenticatedRequest) => {
+  const token = req.cookies["refreshToken"];
+
+  if (!token) throw ApiError.badRequest("No refresh token found.");
+
+  const payload = verifyRefreshToken(token);
+
+  if (!payload) throw ApiError.unauthorized("Invalid refresh token");
+
+  const [userSelect] = await db
+    .select()
+    .from(usersTable)
+    .where(
+      and(eq(usersTable.id, payload.id), eq(usersTable.refreshToken, token)),
+    );
+
+  if (!userSelect) throw ApiError.notFound("No user found");
+
+  const accessToken = createUserToken({ id: userSelect.id });
+
+  return accessToken;
 };

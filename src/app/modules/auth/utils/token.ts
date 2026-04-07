@@ -53,3 +53,15 @@ export function verifyUserToken(token: string) {
     return null;
   }
 }
+
+export function verifyRefreshToken(token: string) {
+  try {
+    const payload = JWT.verify(
+      token,
+      JWT_REFRESH_TOKEN_SECRET,
+    ) as UserTokenPayload;
+    return payload;
+  } catch (error) {
+    return null;
+  }
+}
