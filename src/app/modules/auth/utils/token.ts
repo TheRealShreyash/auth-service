@@ -31,7 +31,7 @@ export function createRefreshToken(payload: UserTokenPayload) {
 export function createEmailVerificationToken(
   payload: EmailVerificationPayload,
 ) {
-  return JWT.sign(payload, JWT_EMAIL_VERIFICATION_SECRET); // lets keep it permanent for now.
+  return JWT.sign(payload, JWT_EMAIL_VERIFICATION_SECRET, { expiresIn: "1d" });
 }
 
 export function verifyEmailVerificationToken(token: string) {
