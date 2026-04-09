@@ -12,6 +12,8 @@ import {
   verifyRefreshToken,
 } from "./utils/token";
 import type { AuthenticatedRequest } from "../../common/utils/interfaces";
+import nodemailer from "nodemailer";
+import { MailtrapTransport } from "mailtrap";
 
 export const signUp = async (payload: SignUpPayload) => {
   const { firstName, lastName, email, password } = payload;
@@ -43,6 +45,8 @@ export const signUp = async (payload: SignUpPayload) => {
   const verificationLink = `http://localhost:${process.env.PORT || 8080}/auth/verify-email?token=${verificationToken}`;
 
   console.log(verificationLink);
+
+  await sendVerificationMail(email, verificationLink);
 
   return result;
 };
@@ -150,4 +154,28 @@ export const refreshToken = async (req: AuthenticatedRequest) => {
   const accessToken = createUserToken({ id: userSelect.id });
 
   return accessToken;
+};
+
+const sendVerificationMail = async (email: string, link: string) => {
+  const TOKEN = process.env.SMTP_TOKEN;
+
+  const transport = nodemailer.createTransport(
+    MailtrapTransport({
+      token: TOKEN as string,
+    }),
+  );
+
+  const sender = {
+    address: "hello@demomailtrap.co",
+    name: "Mailtrap Test",
+  };
+
+  const recipents = ["laughingride9@typingsquirrel.com"];
+
+  await transport.sendMail({
+    from: sender,
+    to: recipents,
+    subject: "You are awesome!",
+    html: `<a href="${link}">Click here to verify!</a>`,
+  });
 };
