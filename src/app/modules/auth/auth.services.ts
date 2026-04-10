@@ -166,8 +166,8 @@ const sendVerificationMail = async (email: string, link: string) => {
   );
 
   const sender = {
-    address: "hello@demomailtrap.co",
-    name: "Mailtrap Test",
+    address: "verifyemail@shreyxsh.me",
+    name: "Verify Email | authX",
   };
 
   const recipents = ["laughingride9@typingsquirrel.com"];
