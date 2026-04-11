@@ -170,12 +170,12 @@ const sendVerificationMail = async (email: string, link: string) => {
     name: "Verify Email | authX",
   };
 
-  const recipents = ["laughingride9@typingsquirrel.com"];
+  const recipents = [email];
 
   await transport.sendMail({
     from: sender,
     to: recipents,
-    subject: "You are awesome!",
+    subject: "Verify your email",
     html: `<a href="${link}">Click here to verify!</a>`,
   });
 };
