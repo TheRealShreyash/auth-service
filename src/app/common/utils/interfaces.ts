@@ -1,19 +1,14 @@
 import type { Request } from "express";
 
-export interface User {
+export interface UserTokenPayload {
   id: string;
-  firstName: string;
-  lastName: string;
+}
+
+export interface EmailVerificationPayload {
   email: string;
-  password: string;
-  emailVerified: boolean;
-  refreshToken?: string;
-  salt?: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface AuthenticatedRequest extends Request {
-  user?: User;
+  user?: UserTokenPayload;
   cookies: Record<string, string>;
 }

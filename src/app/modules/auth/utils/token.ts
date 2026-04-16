@@ -1,12 +1,8 @@
 import JWT from "jsonwebtoken";
-
-export interface UserTokenPayload {
-  id: string;
-}
-
-export interface EmailVerificationPayload {
-  email: string;
-}
+import type {
+  EmailVerificationPayload,
+  UserTokenPayload,
+} from "../../../common/utils/interfaces";
 
 const JWT_SECRET = process.env.JWT_SECRET || "youshallnotpass";
 
