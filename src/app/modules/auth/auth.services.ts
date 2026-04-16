@@ -87,7 +87,7 @@ export const getMe = async (req: AuthenticatedRequest) => {
     .where(eq(usersTable.id, req.user!.id));
 
   if (!userSelect) {
-    throw ApiError.notFound(`User with email ${req.user!.email} doesn't exist`);
+    throw ApiError.notFound("User with that email not found.");
   }
 
   const { password, salt, refreshToken, ...user } = userSelect;
