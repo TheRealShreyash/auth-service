@@ -90,7 +90,6 @@ class AuthController {
 
       ApiResponse.ok(res, "Verification email sent successfully");
     } catch (error) {
-      console.log(error);
       ApiResponse.error(res, error);
     }
   }
