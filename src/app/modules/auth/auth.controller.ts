@@ -84,12 +84,13 @@ class AuthController {
 
   static async handleResendVerificationEmail(req: Request, res: Response) {
     try {
-      const { email } = req.query as { email: string };
+      const { email } = req.body;
 
       await resendVerificationEmail(email);
 
       ApiResponse.ok(res, "Verification email sent successfully");
     } catch (error) {
+      console.log(error);
       ApiResponse.error(res, error);
     }
   }

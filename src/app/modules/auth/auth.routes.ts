@@ -32,7 +32,7 @@ authRouter.post(
 
 authRouter.get("/verify-email", AuthController.handleVerifyEmail);
 
-authRouter.get(
+authRouter.post(
   "/resend-verification",
   validate(emailVerifcationPayloadModel),
   restrictToAuthenticatedUser(),

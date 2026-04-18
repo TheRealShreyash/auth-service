@@ -169,6 +169,7 @@ export const resendVerificationEmail = async (email: string) => {
   const verificationLink = `http://localhost:${process.env.PORT || 8080}/auth/verify-email?token=${verificationToken}`;
 
   await sendVerificationMail(email, verificationLink);
+  return;
 };
 
 const sendVerificationMail = async (email: string, link: string) => {
