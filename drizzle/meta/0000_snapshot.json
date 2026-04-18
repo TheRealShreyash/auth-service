@@ -1,5 +1,5 @@
 {
-  "id": "5eab300e-149a-45d0-a58c-eaca0a8bac62",
+  "id": "e18b153c-a9ec-4b7b-a3e6-27d5706cf3b5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -52,6 +52,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -75,6 +81,13 @@
           "nullsNotDistinct": false,
           "columns": [
             "email"
+          ]
+        },
+        "users_refresh_token_unique": {
+          "name": "users_refresh_token_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "refresh_token"
           ]
         }
       },
