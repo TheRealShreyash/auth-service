@@ -3,6 +3,7 @@ import {
   getMe,
   logout,
   refreshToken,
+  resendVerificationEmail,
   signin,
   signUp,
   verifyEmail,
@@ -76,6 +77,18 @@ class AuthController {
       ApiResponse.ok(res, "Token refreshed successfully", {
         accessToken: accessToken,
       });
+    } catch (error) {
+      ApiResponse.error(res, error);
+    }
+  }
+
+  static async handleResendVerificationEmail(req: Request, res: Response) {
+    try {
+      const { email } = req.query as { email: string };
+
+      await resendVerificationEmail(email);
+
+      ApiResponse.ok(res, "Verification email sent successfully");
     } catch (error) {
       ApiResponse.error(res, error);
     }

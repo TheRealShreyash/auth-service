@@ -156,6 +156,21 @@ export const refreshToken = async (req: AuthenticatedRequest) => {
   return accessToken;
 };
 
+export const resendVerificationEmail = async (email: string) => {
+  const [userSelect] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.email, email));
+
+  if (userSelect?.emailVerified)
+    throw ApiError.badRequest("Email already verified");
+
+  const verificationToken = createEmailVerificationToken({ email });
+  const verificationLink = `http://localhost:${process.env.PORT || 8080}/auth/verify-email?token=${verificationToken}`;
+
+  await sendVerificationMail(email, verificationLink);
+};
+
 const sendVerificationMail = async (email: string, link: string) => {
   const TOKEN = process.env.SMTP_TOKEN;
 

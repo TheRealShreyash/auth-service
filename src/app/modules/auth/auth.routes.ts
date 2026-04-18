@@ -1,6 +1,10 @@
 import { Router } from "express";
 import validate from "../../common/middleware/validate.middleware";
-import { signInPayloadModel, signUpPayloadModel } from "./auth.models";
+import {
+  emailVerifcationPayloadModel,
+  signInPayloadModel,
+  signUpPayloadModel,
+} from "./auth.models";
 import AuthController from "./auth.controller";
 import { restrictToAuthenticatedUser } from "../../common/middleware/authenticate.middleware";
 
@@ -27,6 +31,13 @@ authRouter.post(
 );
 
 authRouter.get("/verify-email", AuthController.handleVerifyEmail);
+
+authRouter.get(
+  "/resend-verification",
+  validate(emailVerifcationPayloadModel),
+  restrictToAuthenticatedUser(),
+  AuthController.handleResendVerificationEmail,
+);
 
 authRouter.post("/refresh-token", AuthController.handleRefreshToken);
 
